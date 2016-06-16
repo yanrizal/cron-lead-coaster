@@ -45,6 +45,10 @@ var jsonParser = _bodyParser2['default'].json();
 // app/routes.js
 module.exports = function (app, passport) {
 
+  app.get('/', function (req, res) {
+    res.render('index', { title: 'index' });
+  });
+
   app.post('/startapi', jsonParser, function (req, res) {
     // const params = {
     //   url: req.body.url
