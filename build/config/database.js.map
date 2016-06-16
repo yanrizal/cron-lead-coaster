@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/config/database.js"],"names":[],"mappings":";;;;;AAAO,IAAM,KAAK,GAAG;AACpB,MAAK,EAAC,uEAAuE;AAC7E,QAAO,EAAC,qCAAqC;CAC7C,CAAA","file":"database.js","sourcesContent":["export const dbUrl = {\n\t'url':'mongodb://juonliners:lc0aster@ds023593.mlab.com:23593/lead-coaster-db',\n\t'local':'mongodb://localhost/lead-coaster-db'\n}"]}

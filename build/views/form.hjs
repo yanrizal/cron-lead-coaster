@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <title>{{title}}</title>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </head>
+    <body>
+        <form method="POST" action="https://creator.zoho.com/api/sampleapps/xml/sample/form/Employee/record/add/">
+            <input type="hidden" name ="authtoken" value="***************">
+            <input type="hidden" name ="scope" id="scope" value="creatorapi">
+            <input type="text" name="Name" value="Gary">
+            <input type="text" name="DOB" value="12-Jun-1980">
+            <input type="text" name="Address" value="USA">
+            <input type="text" name="Basic" value="10000">
+            <input type="text" name="Hobbies" value="Reading,Writing">
+            <input type="submit" value="Add Record">
+        </form>
+    </body>
+</html>
