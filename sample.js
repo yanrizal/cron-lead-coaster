@@ -122,6 +122,7 @@ casper.waitWhileSelector('form.login-form', function(){
 
 casper.then(function(){
     console.log(this.getTitle());
+    this.capture('screenshots/ss.png');
     this.thenOpen(urlSearch, function() {
     console.log(this.getTitle());
     links = this.evaluate(getLinks);
