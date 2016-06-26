@@ -7,7 +7,6 @@ if (!fs.exists(path)){
 }else{
   searchChrome = require(path);
 }
-
 require('utils').dump(searchChrome);
 
 (function(){
@@ -41,11 +40,6 @@ var casper = require('casper').create({
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4'
     }
 });
-
-//PROFILE DATA
-var lkdUsername = 'yanuar.rizal@mbiz.co.id';
-var lkdPassword = '@FYhdv9Y';
-var totalSearch = 0;
 
 //LOAD DATA
 var jsonData,dataProfile,page,urlSearch;
@@ -82,6 +76,11 @@ function getRandomArbitrary(min, max) {
 var url = 'https://www.linkedin.com/';
 casper.start();
 
+//PROFILE DATA
+var lkdUsername = casper.cli.get('username');
+var totalSearch = 0;
+console.log(lkdUsername);
+
 casper.thenOpen("https://lead-coaster.herokuapp.com/getdata", {
       method: 'post',
       data:{
@@ -90,18 +89,23 @@ casper.thenOpen("https://lead-coaster.herokuapp.com/getdata", {
 });
 
 casper.then(function() {
+    var searchId = casper.cli.get('searchId');
     require('utils').dump(JSON.parse(this.getPageContent()));
     jsonData = JSON.parse(this.getPageContent());
     if (jsonData === null){
       dataProfile = [];
     } else {
-      dataProfile = JSON.parse(jsonData.data[0].profileVisit);
-      //console.log(dataProfile[0].fullName);
+      if (jsonData.data[parseInt(searchId)].profileVisit.length === 0){
+        dataProfile = [];
+      }else{
+        dataProfile = JSON.parse(jsonData.data[parseInt(searchId)].profileVisit);
+      }
       console.log(dataProfile.length)
     }
     console.log('retreive data');
     page = Math.floor(dataProfile.length/10)+1;
     console.log('page', page);
+    console.log('searchName', jsonData.data[parseInt(searchId)].searchName);
     urlSearch = 'https://www.linkedin.com/vsearch/p?type=people&keywords=yanuar&page_num='+page;
 });
 
@@ -110,8 +114,8 @@ casper.thenOpen(url, function(){
   this.waitForSelector('form.login-form', function(){
      console.log('form loaded')
      this.fillSelectors('form.login-form', {
-          'input#login-email' : lkdUsername,
-          'input#login-password' : lkdPassword
+          'input#login-email' : 'yanuar.rizal@mbiz.co.id',
+          'input#login-password' : '@FYhdv9Y'
       }, true);
   });
 });

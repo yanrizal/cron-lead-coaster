@@ -1,9 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import request from 'request';
-import cheerio from 'cheerio';
-import Crawler from 'simplecrawler';
-import querystring from 'querystring';
 import fs from 'fs';
 import chalk from 'chalk';
 import passport from 'passport';
@@ -19,10 +16,11 @@ module.exports = function(app, passport) {
     });
 
     app.post('/startapi', jsonParser, (req, res) => {
-      // const params = {
-      //   url: req.body.url
-      // };
-      exec('./vendor/casperjs/bin/casperjs sample.js', function(status, output) {
+      const params = {
+        searchId: req.body.searchId,
+        username: req.body.username
+      };
+      exec(`./vendor/casperjs/bin/casperjs sample.js --searchId=${params.searchId} --username=${params.username}`, function(status, output) {
         console.log('Exit status:', status);
         console.log('Program output:', output);
       });
@@ -30,9 +28,16 @@ module.exports = function(app, passport) {
     });
 
     app.post('/startapitest', jsonParser, (req, res) => {
-      exec('casperjs sample.js', function(status, output) {
-        console.log('Exit status:', status);
-        console.log('Program output:', output);
+      console.log('exec');
+      const params = {
+        searchId: req.body.searchId,
+        username: req.body.username
+      };
+      console.log('searchId: ',params.searchId);
+      console.log('username: ', params.username);
+      exec(`casperjs sample.js --searchId=${params.searchId} --username=${params.username}`, function(status, output) {
+        //console.log('Exit status:', status);
+        //console.log('Program output:', output);
       });
       res.json({});
     });

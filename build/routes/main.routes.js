@@ -14,18 +14,6 @@ var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
 
-var _cheerio = require('cheerio');
-
-var _cheerio2 = _interopRequireDefault(_cheerio);
-
-var _simplecrawler = require('simplecrawler');
-
-var _simplecrawler2 = _interopRequireDefault(_simplecrawler);
-
-var _querystring = require('querystring');
-
-var _querystring2 = _interopRequireDefault(_querystring);
-
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -50,10 +38,11 @@ module.exports = function (app, passport) {
   });
 
   app.post('/startapi', jsonParser, function (req, res) {
-    // const params = {
-    //   url: req.body.url
-    // };
-    exec('./vendor/casperjs/bin/casperjs sample.js', function (status, output) {
+    var params = {
+      searchId: req.body.searchId,
+      username: req.body.username
+    };
+    exec('./vendor/casperjs/bin/casperjs sample.js --searchId=' + params.searchId + ' --username=' + params.username, function (status, output) {
       console.log('Exit status:', status);
       console.log('Program output:', output);
     });
@@ -61,9 +50,16 @@ module.exports = function (app, passport) {
   });
 
   app.post('/startapitest', jsonParser, function (req, res) {
-    exec('casperjs sample.js', function (status, output) {
-      console.log('Exit status:', status);
-      console.log('Program output:', output);
+    console.log('exec');
+    var params = {
+      searchId: req.body.searchId,
+      username: req.body.username
+    };
+    console.log('searchId: ', params.searchId);
+    console.log('username: ', params.username);
+    exec('casperjs sample.js --searchId=' + params.searchId + ' --username=' + params.username, function (status, output) {
+      //console.log('Exit status:', status);
+      //console.log('Program output:', output);
     });
     res.json({});
   });
