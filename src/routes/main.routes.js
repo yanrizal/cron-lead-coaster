@@ -9,9 +9,9 @@ require('shelljs/global');
 const jsonParser = bodyParser.json();
 
 // app/routes.js
-module.exports = function(app, passport) {
+module.exports = (app, passport) => {
 
-    app.get('/', function(req, res) {
+    app.get('/', (req, res) => {
       res.render('index', { title: 'index'});
     });
 
