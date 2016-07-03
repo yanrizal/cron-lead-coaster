@@ -1,13 +1,4 @@
-var fs = require('fs');
-// data chrome extension copy search url
-var searchChrome;
-var path = 'tmp/mysearch.json';
-if (!fs.exists(path)){
-  searchChrome = {}
-}else{
-  searchChrome = require(path);
-}
-require('utils').dump(searchChrome);
+var custom = require('casper/utils');
 
 (function(){
     // Convert array to object
@@ -18,7 +9,7 @@ require('utils').dump(searchChrome);
                 var thisEle = convArrToObj(array[i]);
                 thisEleObj[i] = thisEle;
             }
-        }else {
+        } else {
             thisEleObj = array;
         }
         return thisEleObj;
@@ -48,18 +39,6 @@ var jsonData,dataProfile,page,urlSearch;
 var links;
 var i = -1;
 
-
-function getLinks() {
-    var allLinks = document.querySelectorAll('.main-headline');
-    return Array.prototype.map.call(allLinks, function (e) {
-        return e.getAttribute('href')
-    });
-}
-
-function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
 var url = 'https://www.linkedin.com';
 casper.start();
 
@@ -70,7 +49,7 @@ var leadArr = [];
 var searchName = '';
 console.log(lkdUsername);
 
-casper.thenOpen("https://lead-coaster.herokuapp.com/getdata", {
+casper.thenOpen("https://lead-coaster.herokuapp.com/api/v1/getdata", {
       method: 'post',
       data:{
           "lkdUsername": lkdUsername
@@ -114,8 +93,8 @@ casper.thenOpen(url, function(){
   this.waitForSelector('form.login-form', function(){
      console.log('form loaded')
      this.fillSelectors('form.login-form', {
-          'input#login-email' : 'yanuar.rizal@mbiz.co.id',
-          'input#login-password' : '@FYhdv9Y'
+          'input#login-email' : casper.cli.get('email'),
+          'input#login-password' : casper.cli.get('password')
       }, true);
   });
 });
@@ -162,7 +141,7 @@ casper.then(function(){
       // ------- SEARCH PAGE ---------
 
       console.log(this.getTitle());
-      links = this.evaluate(getLinks);
+      links = this.evaluate(custom.getLinks);
       //console.log(links);
       totalSearch = this.evaluate(function(){
           var tot = document.querySelectorAll('#results_count strong')[0].innerHTML;
@@ -198,9 +177,9 @@ casper.then(function(){
               }
               if(flag){
                 dataProfile.push(data); 
-                console.log(JSON.stringify(dataProfile));
+                //console.log(JSON.stringify(dataProfile));
               }
-          }).wait(getRandomArbitrary(5000,30000));
+          }).wait(custom.getRandomArbitrary(5000,30000));
       });
     });
 });
@@ -209,7 +188,7 @@ casper.then(function(){
 
 casper.then(function(){
   // ------ SAVE DATA TO DATABASE --------
-  this.thenOpen("https://lead-coaster.herokuapp.com/savedata", {
+  this.thenOpen("https://lead-coaster.herokuapp.com/api/v1/savedata", {
         method: 'post',
         data:{
             "lkdUsername": lkdUsername,

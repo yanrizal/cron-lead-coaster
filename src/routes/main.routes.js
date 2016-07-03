@@ -5,7 +5,10 @@ import fs from 'fs';
 import chalk from 'chalk';
 import passport from 'passport';
 require('shelljs/global');
-// const router = express.Router();
+import { findFile } from '../models/file';
+import crypto from 'crypto';
+import assert from 'assert';
+
 const jsonParser = bodyParser.json();
 
 // app/routes.js
@@ -35,11 +38,22 @@ module.exports = (app, passport) => {
       };
       console.log('searchId: ',params.searchId);
       console.log('username: ', params.username);
-      exec(`casperjs sample.js --searchId=${params.searchId} --username=${params.username}`, function(status, output) {
-        //console.log('Exit status:', status);
-        //console.log('Program output:', output);
+      findFile(params, (err, response) => {
+        //console.log(response);
+        const email = response.meta.linkedin.email;
+        const passwordEnc = response.meta.linkedin.password;
+        const algorithm = 'aes256'; // or any other algorithm supported by OpenSSL
+        const key = 'password';
+        const decipher = crypto.createDecipher(algorithm, key);
+        const decrypted = decipher.update(passwordEnc, 'hex', 'utf8') + decipher.final('utf8');
+        //console.log(decrypted);
+        res.json(response);
+        exec(`casperjs sample.js --searchId=${params.searchId} --username=${params.username} --email=${email} --password=${decrypted}`, function(status, output) {
+          //console.log('Exit status:', status);
+          //console.log('Program output:', output);
+        });
       });
-      res.json({});
+      
     });
 
     

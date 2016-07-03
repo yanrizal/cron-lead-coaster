@@ -12,15 +12,15 @@ import { dbUrl } from './config/database';
 
 const app = express();
 // database connection
-// mongoose.connect(dbUrl.url);
-// const db = mongoose.connection;
-// db.on('error', (err) => {
-//   console.log(err);
-//   console.log('error connection');
-// });
-// db.once('open', () => {
-//   console.log('connect!!');
-// });
+mongoose.connect(dbUrl.url);
+const db = mongoose.connection;
+db.on('error', (err) => {
+  console.log(err);
+  console.log('error connection');
+});
+db.once('open', () => {
+  console.log('connect!!');
+});
 
 require('./config/passport')(passport); // pass passport for configuration
 
