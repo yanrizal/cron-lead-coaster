@@ -9,6 +9,10 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import { dbUrl } from './config/database';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.load();
 
 const app = express();
 // database connection

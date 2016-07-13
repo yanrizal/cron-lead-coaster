@@ -25,6 +25,7 @@ var custom = require('casper/utils');
 
 var casper = require('casper').create({   
     verbose: true,
+    //logLevel: 'debug',
     pageSettings: {
       loadImages:  false,   
       loadPlugins: false, 
@@ -40,21 +41,60 @@ var links;
 var i = -1;
 
 var url = 'https://www.linkedin.com';
+casper.on('resource.received', function(resource) {
+    var status = resource.status;
+    if(status >= 400) {
+        casper.log('Resource ' + resource.url + ' failed to load (' + status + ')', 'error');
+
+        resourceErrors.push({
+            url: resource.url,
+            status: resource.status
+        });
+    }
+});
+casper.on("page.error", function(msg, trace) {
+     this.echo("Error: " + msg, "ERROR");
+});
 casper.start();
 
 //PROFILE DATA
-var lkdUsername = casper.cli.get('username');
+var username = casper.cli.get('username');
 var totalSearch = 0;
 var leadArr = [];
 var searchName = '';
-console.log(lkdUsername);
+var token = '';
+var linked = '';
+console.log(username);
+casper.options.waitTimeout = 5000;
 
-casper.thenOpen("https://lead-coaster.herokuapp.com/api/v1/getdata", {
+casper.then(function(){
+  // login
+  this.thenOpen("https://lead-coaster.herokuapp.com/login", {
+        method: 'post',
+        data:{
+            email: username,
+            password: 'coaster'
+        }
+  });
+});
+
+casper.then(function(){
+  var tokenData = JSON.parse(this.getPageContent());
+  token = tokenData.token;
+  console.log(token)
+});
+
+casper.then(function(){
+  var urlData = "https://lead-coaster.herokuapp.com/api/v1/getdata?token="+token;
+  console.log(urlData)
+  this.thenOpen(urlData, {
       method: 'post',
       data:{
-          "lkdUsername": lkdUsername
+          "lkdUsername": username
       }
+  });
 });
+
 
 casper.then(function() {
     var searchId = casper.cli.get('searchId');
@@ -64,15 +104,12 @@ casper.then(function() {
       dataProfile = [];
     } else {
       if (jsonData.data[parseInt(searchId)].profileVisit.length === 0){
-        console.log('zero data')
         dataProfile = [];
       }else{
-        console.log('ada data')
         dataProfile = JSON.parse(jsonData.data[parseInt(searchId)].profileVisit);
       }
       console.log(dataProfile.length)
     }
-    console.log('retreive data');
     page = Math.floor(dataProfile.length/10)+1;
     searchName =  jsonData.data[parseInt(searchId)].searchName;
     console.log('page', page);
@@ -153,19 +190,30 @@ casper.then(function(){
       this.each(links, function() { 
           i++; 
           console.log(links[i]);
+          linked = links[i];
           this.thenOpen((links[i]), function() {
-
+              //this.capture('screenshots/ss.png');
               // --------- VISITING PROFILE SEARCH USER PAGE ----------
-
               var data = this.evaluate(function(){
                 var fullName = document.querySelector('.full-name').innerHTML;
-                var idUrl = document.querySelector('.view-public-profile').getAttribute('href');
+                var idUrl = '';
+                var link = window.location.href;
+                if ( link.indexOf('OUT_OF_NETWORK') > -1 ) {
+                  idUrl = fullName
+                } else {
+                  idUrl = document.querySelector('.view-public-profile').getAttribute('href');
+                }
+                
+                console.log(idUrl);
+                if(!idUrl){
+                  idUrl = fullName
+                }
                 return {
                   'fullName': fullName,
                   'idUrl': idUrl
                 };
               });
-              console.log(data.idUrl, data.fullName);
+              console.log(data.fullName);
               var flag = true;
               for(var i=0;i<dataProfile.length;i++){
                   if(dataProfile[i].idUrl === data.idUrl){
@@ -191,7 +239,7 @@ casper.then(function(){
   this.thenOpen("https://lead-coaster.herokuapp.com/api/v1/savedata", {
         method: 'post',
         data:{
-            "lkdUsername": lkdUsername,
+            "lkdUsername": username,
             "totalSearch": totalSearch,
             "leadCount": leadArr.length,
             "dataProfile": JSON.stringify(dataProfile),
