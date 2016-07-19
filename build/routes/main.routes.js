@@ -76,7 +76,7 @@ module.exports = function (app, passport) {
       var email = response.meta.linkedin.email;
       var passwordEnc = response.meta.linkedin.password;
       var algorithm = 'aes256'; // or any other algorithm supported by OpenSSL
-      var key = process.env.TOKEN_SECRET;;
+      var key = process.env.TOKEN_SECRET;
       var decipher = _crypto2['default'].createDecipher(algorithm, key);
       var decrypted = decipher.update(passwordEnc, 'hex', 'utf8') + decipher.final('utf8');
       //console.log(decrypted);
