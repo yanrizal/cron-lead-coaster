@@ -44,17 +44,24 @@ var _expressSession2 = _interopRequireDefault(_expressSession);
 
 var _configDatabase = require('./config/database');
 
+var _dotenv = require('dotenv');
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+// Load environment variables from .env file
+_dotenv2['default'].load();
+
 var app = (0, _express2['default'])();
 // database connection
-// mongoose.connect(dbUrl.url);
-// const db = mongoose.connection;
-// db.on('error', (err) => {
-//   console.log(err);
-//   console.log('error connection');
-// });
-// db.once('open', () => {
-//   console.log('connect!!');
-// });
+_mongoose2['default'].connect(_configDatabase.dbUrl.url);
+var db = _mongoose2['default'].connection;
+db.on('error', function (err) {
+  console.log(err);
+  console.log('error connection');
+});
+db.once('open', function () {
+  console.log('connect!!');
+});
 
 require('./config/passport')(_passport2['default']); // pass passport for configuration
 

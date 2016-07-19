@@ -26,8 +26,22 @@ var _passport = require('passport');
 
 var _passport2 = _interopRequireDefault(_passport);
 
+var _modelsFile = require('../models/file');
+
+var _crypto = require('crypto');
+
+var _crypto2 = _interopRequireDefault(_crypto);
+
+var _assert = require('assert');
+
+var _assert2 = _interopRequireDefault(_assert);
+
+var _nodeSchedule = require('node-schedule');
+
+var _nodeSchedule2 = _interopRequireDefault(_nodeSchedule);
+
 require('shelljs/global');
-// const router = express.Router();
+
 var jsonParser = _bodyParser2['default'].json();
 
 // app/routes.js
@@ -57,11 +71,21 @@ module.exports = function (app, passport) {
     };
     console.log('searchId: ', params.searchId);
     console.log('username: ', params.username);
-    exec('casperjs sample.js --searchId=' + params.searchId + ' --username=' + params.username, function (status, output) {
-      //console.log('Exit status:', status);
-      //console.log('Program output:', output);
+    (0, _modelsFile.findFile)(params, function (err, response) {
+      //console.log(response);
+      var email = response.meta.linkedin.email;
+      var passwordEnc = response.meta.linkedin.password;
+      var algorithm = 'aes256'; // or any other algorithm supported by OpenSSL
+      var key = process.env.TOKEN_SECRET;;
+      var decipher = _crypto2['default'].createDecipher(algorithm, key);
+      var decrypted = decipher.update(passwordEnc, 'hex', 'utf8') + decipher.final('utf8');
+      //console.log(decrypted);
+      res.json(response);
+      exec('casperjs sample.js --searchId=' + params.searchId + ' --username=' + params.username + ' --email=' + email + ' --password=' + decrypted, function (status, output) {
+        //console.log('Exit status:', status);
+        //console.log('Program output:', output);
+      });
     });
-    res.json({});
   });
 };
 //# sourceMappingURL=main.routes.js.map

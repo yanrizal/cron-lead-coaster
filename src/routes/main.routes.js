@@ -8,6 +8,7 @@ require('shelljs/global');
 import { findFile } from '../models/file';
 import crypto from 'crypto';
 import assert from 'assert';
+import schedule from 'node-schedule';
 
 const jsonParser = bodyParser.json();
 
