@@ -25,9 +25,9 @@ var custom = require('casper/utils');
 
 var casper = require('casper').create({   
     verbose: true,
-    proxy: '202.159.42.246:80',
     //logLevel: 'debug',
     pageSettings: {
+      //proxy: '61.191.27.117:123',
       loadImages:  false,   
       loadPlugins: false, 
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4'
