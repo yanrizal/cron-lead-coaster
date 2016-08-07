@@ -238,15 +238,15 @@ casper.then(function(){
 casper.then(function(){
   // ------ SAVE DATA TO DATABASE --------
   this.thenOpen("https://lead-coaster.herokuapp.com/api/v1/savedata", {
-        method: 'post',
-        data:{
-            "lkdUsername": username,
-            "totalSearch": totalSearch,
-            "leadCount": leadArr.length,
-            "dataProfile": JSON.stringify(dataProfile),
-            "page": page,
-            "dataIndex": casper.cli.get('searchId')
-        }
+    method: 'post',
+    data:{
+      "lkdUsername": username,
+      "totalSearch": totalSearch,
+      "leadCount": leadArr.length,
+      "dataProfile": JSON.stringify(dataProfile),
+      "page": page,
+      "dataIndex": casper.cli.get('searchId')
+    }
   });
 });
 
